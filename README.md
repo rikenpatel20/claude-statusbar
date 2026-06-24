@@ -56,7 +56,7 @@ menu bar:  🔴 2        ← two sessions are waiting on you
 
 | | |
 |---|---|
-| 🟢🟡🔴 **Always-on icon** | green idle · yellow working · red + count when sessions need you |
+| 🟢🟡🔴 **Always-on icon** | the mascot in your menu bar with a colored badge — red count when sessions need you, amber when working, or your pinned project's live context % |
 | 🔔 **Instant alerts** | native notification + sound the moment a session hits a permission prompt |
 | 📊 **Live tokens + cost** | per session, with a context-fill bar (auto-detects 200K vs 1M models) |
 | 🖱️ **Click to focus** | jump straight to that session's terminal window/tab (matched by tty) |

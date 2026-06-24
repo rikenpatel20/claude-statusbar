@@ -25,6 +25,7 @@ install -m 0755 "$REPO_DIR/src/cc-status.py"     "$STATUS_DIR/cc-status.py"
 install -m 0755 "$REPO_DIR/src/cc-statusline.py" "$STATUS_DIR/cc-statusline.py"
 install -m 0755 "$REPO_DIR/src/cc-focus.py"      "$STATUS_DIR/cc-focus.py"
 install -m 0755 "$REPO_DIR/src/cc-config.py"     "$STATUS_DIR/cc-config.py"
+install -m 0644 "$REPO_DIR/assets/menubar.png"   "$STATUS_DIR/menubar.png"
 
 # Locate the SwiftBar plugins folder: prefer the value SwiftBar itself stores.
 PLUGIN_DIR="$(defaults read com.ameba.SwiftBar PluginDirectory 2>/dev/null || true)"

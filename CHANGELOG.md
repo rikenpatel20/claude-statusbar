@@ -6,6 +6,16 @@ to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
 
+### Added
+- Mascot logo shown as the menu-bar icon, with a colored status badge (red count
+  when sessions need you, amber when working, or the pinned project's context %).
+
+### Fixed
+- Clicking a session row could launch your editor (e.g. VS Code) instead of
+  focusing the terminal: SwiftBar's `bash=` ran the Python helper *through bash*,
+  which failed and fell back to opening the `.py` file. Click actions now invoke
+  `python3` explicitly via `shell=`, so the terminal is focused reliably.
+
 ## [0.1.0] - 2026-06-24
 
 Initial release.

@@ -26,11 +26,27 @@ import os
 import json
 import glob
 import time
+import base64
 
 STATUS_DIR = os.path.expanduser("~/.claude/status")
 CONFIG = os.path.join(STATUS_DIR, "config.json")
 FOCUS = os.path.expanduser("~/.claude/status/cc-focus.py")
 CONF = os.path.expanduser("~/.claude/status/cc-config.py")
+ICON = os.path.expanduser("~/.claude/status/menubar.png")
+PY = "/usr/bin/python3"  # invoke scripts via python3, never `bash file.py`
+
+
+def action(script, *params):
+    """Build a SwiftBar click action that runs a python script.
+
+    Using shell=python3 (not bash=script.py) is essential: bash= would try to
+    interpret the Python file AS bash, fail, and fall back to *opening* the .py
+    file — which launches your default editor (e.g. VS Code) instead of focusing
+    the terminal.
+    """
+    parts = [f'shell="{PY}"', f'param1="{script}"']
+    parts += [f'param{i + 2}="{p}"' for i, p in enumerate(params)]
+    return " ".join(parts)
 
 STALE_SECONDS = 6 * 3600     # hide entirely after this
 IDLE_AFTER = 90              # "working" with no refresh past this == idle
@@ -118,7 +134,7 @@ def load_sessions(now):
 
 
 def focus_action(s):
-    return f'bash="{FOCUS}" param1="{s.get("tty", "")}" param2="{s.get("term", "")}" terminal=false'
+    return action(FOCUS, s.get("tty", ""), s.get("term", "")) + " terminal=false"
 
 
 def row_color(st):
@@ -162,26 +178,57 @@ def emit_session(s, primary):
     print("-----")
     print(f"--↳ Open this terminal | {focus}")
     pin_label = "☆ Unpin from menu bar" if pinned else "★ Show in menu bar"
-    print(f'--{pin_label} | bash="{CONF}" param1="pin" param2="{project}" terminal=false refresh=true')
-    print(f'--✕ Clear this session | color={MUTED} bash="{CONF}" param1="clear" param2="{s.get("session_id", "")}" terminal=false refresh=true')
+    print(f'--{pin_label} | {action(CONF, "pin", project)} terminal=false refresh=true')
+    print(f'--✕ Clear this session | color={MUTED} {action(CONF, "clear", s.get("session_id", ""))} terminal=false refresh=true')
 
 
-def title(scope, primary):
+def menubar_image():
+    """Base64-encoded PNG of the mascot for the menu-bar icon ('' if missing)."""
+    try:
+        with open(ICON, "rb") as f:
+            return base64.b64encode(f.read()).decode()
+    except Exception:
+        return ""
+
+
+def title_badge(scope, primary):
+    """Return (text, color) shown next to the logo in the menu bar.
+
+    The colored count is the at-a-glance signal: red = sessions need you,
+    amber = working. A pinned project instead shows its live context %.
+    """
     needs = [s for s in scope if s["_eff"] == "needs-attention"]
     if needs:
-        return f"🔴 {len(needs)}"
+        return f" {len(needs)}", RED
 
     if primary:
         p = next((s for s in scope if s.get("project") == primary), None)
         if p:
             limit = ctx_limit(p.get("model"))
             pct = (p.get("tokens", 0) / limit * 100) if limit else 0
-            return f"{DOT.get(p['_eff'], '⚪')} {primary} {pct:.0f}%"
+            return f" {primary} {pct:.0f}%", usage_color(pct)
 
     working = [s for s in scope if s["_eff"] == "working"]
     if working:
-        return f"🟡 {len(working)}"
-    return "🟢"
+        return f" {len(working)}", AMBER
+    return "", ""
+
+
+def emit_title(scope, primary):
+    """Print the menu-bar line: mascot logo + colored status badge."""
+    img = menubar_image()
+    text, color = title_badge(scope, primary)
+    attrs = []
+    if img:
+        attrs.append(f"image={img}")
+    else:
+        # Fallback to an emoji dot if the icon file isn't installed.
+        needs = any(s["_eff"] == "needs-attention" for s in scope)
+        working = any(s["_eff"] == "working" for s in scope)
+        text = (("🔴" if needs else "🟡" if working else "🟢") + text)
+    if color:
+        attrs.append(f"color={color}")
+    print(f"{text} | {' '.join(attrs)}")
 
 
 def main():
@@ -197,12 +244,13 @@ def main():
         scope = [s for s in all_sessions if s.get("project") == primary] or all_sessions
 
     if not all_sessions:
-        print("🟢 | ")
+        img = menubar_image()
+        print(f" | image={img}" if img else "🟢 | ")
         print("---")
         print(f"No active Claude Code sessions | color={MUTED}")
         return
 
-    print(f"{title(scope, primary)} | ")
+    emit_title(scope, primary)
     print("---")
 
     needs = sum(1 for s in scope if s["_eff"] == "needs-attention")
@@ -228,8 +276,8 @@ def main():
 
     print("---")
     filt = "✓ Filter: pinned only" if filter_on else "Filter: showing all"
-    print(f'{filt} | bash="{CONF}" param1="filter" terminal=false refresh=true')
-    print(f'Clear idle sessions (30m+) | bash="{CONF}" param1="clearstale" param2="1800" terminal=false refresh=true')
+    print(f'{filt} | {action(CONF, "filter")} terminal=false refresh=true')
+    print(f'Clear idle sessions (30m+) | {action(CONF, "clearstale", "1800")} terminal=false refresh=true')
 
 
 if __name__ == "__main__":
