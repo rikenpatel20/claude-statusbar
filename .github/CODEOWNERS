@@ -1,0 +1,13 @@
+# Code owners for claude-statusbar.
+#
+# GitHub will automatically request a review from these owners on any pull
+# request that touches matching paths. This gives you a review request on every
+# incoming PR.
+#
+# Note: enforcing code-owner approval in branch protection is intentionally left
+# OFF, because a solo maintainer cannot approve their own pull request — turning
+# it on would block you from merging. Flip `require_code_owner_reviews` on later
+# if you add co-maintainers.
+
+# Everything is owned by the maintainer.
+* @rikenpatel20
