@@ -6,25 +6,15 @@ to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
 
-### Added
-- Mascot logo shown as the menu-bar icon (small, with transparent padding so it
-  sits tidily in the bar), preceded by an always-visible colored status dot
-  (🔴 waiting · 🟡 working · 🟢 idle) plus a count or the pinned project's
-  context % — so status stays readable at a glance even with the logo present.
-
-### Fixed
-- Clicking a session row could launch your editor (e.g. VS Code) instead of
-  focusing the terminal: SwiftBar's `bash=` ran the Python helper *through bash*,
-  which failed and fell back to opening the `.py` file. Click actions now invoke
-  `python3` explicitly via `shell=`, so the terminal is focused reliably.
-
 ## [0.1.0] - 2026-06-24
 
 Initial release.
 
 ### Added
 - macOS menu-bar indicator (SwiftBar plugin) showing all live Claude Code
-  sessions: green idle / yellow working / red + count when sessions need you.
+  sessions, with the mascot logo and an always-visible colored status dot
+  (🔴 waiting · 🟡 working · 🟢 idle) plus a count or the pinned project's
+  context %.
 - Native notification + sound the instant a session hits a permission prompt.
 - Per-session live token (context-window usage) and dollar cost, with a
   context-fill bar that auto-detects 200K vs 1M-context models.
@@ -44,6 +34,10 @@ Initial release.
 - Claude Code's idle "waiting for your input" notification is no longer treated
   as a red action item (it maps to `done`), so the bar never shows a false
   "waiting on you".
+- Clicking a session row could launch your editor (e.g. VS Code) instead of
+  focusing the terminal: SwiftBar's `bash=` ran the Python helper *through bash*,
+  which failed and fell back to opening the `.py` file. Click actions now invoke
+  `python3` explicitly via `shell=`.
 - Menu detail text uses full-contrast colors instead of washed-out gray.
 
 [Unreleased]: https://github.com/rikenpatel20/claude-statusbar/compare/v0.1.0...HEAD
