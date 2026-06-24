@@ -191,44 +191,32 @@ def menubar_image():
         return ""
 
 
-def title_badge(scope, primary):
-    """Return (text, color) shown next to the logo in the menu bar.
-
-    The colored count is the at-a-glance signal: red = sessions need you,
-    amber = working. A pinned project instead shows its live context %.
+def title_text(scope, primary):
+    """Menu-bar text: a colored status DOT (always visible, so you can tell at a
+    glance whether Claude is waiting) plus a count or the pinned project's %.
     """
-    needs = [s for s in scope if s["_eff"] == "needs-attention"]
+    needs = sum(1 for s in scope if s["_eff"] == "needs-attention")
     if needs:
-        return f" {len(needs)}", RED
+        return f"🔴 {needs}"
 
+    working = sum(1 for s in scope if s["_eff"] == "working")
     if primary:
         p = next((s for s in scope if s.get("project") == primary), None)
         if p:
             limit = ctx_limit(p.get("model"))
             pct = (p.get("tokens", 0) / limit * 100) if limit else 0
-            return f" {primary} {pct:.0f}%", usage_color(pct)
+            return f"{DOT.get(p['_eff'], '⚪')} {pct:.0f}%"
 
-    working = [s for s in scope if s["_eff"] == "working"]
     if working:
-        return f" {len(working)}", AMBER
-    return "", ""
+        return f"🟡 {working}"
+    return "🟢"
 
 
 def emit_title(scope, primary):
-    """Print the menu-bar line: mascot logo + colored status badge."""
+    """Print the menu-bar line: colored status dot + mascot logo."""
     img = menubar_image()
-    text, color = title_badge(scope, primary)
-    attrs = []
-    if img:
-        attrs.append(f"image={img}")
-    else:
-        # Fallback to an emoji dot if the icon file isn't installed.
-        needs = any(s["_eff"] == "needs-attention" for s in scope)
-        working = any(s["_eff"] == "working" for s in scope)
-        text = (("🔴" if needs else "🟡" if working else "🟢") + text)
-    if color:
-        attrs.append(f"color={color}")
-    print(f"{text} | {' '.join(attrs)}")
+    text = title_text(scope, primary)
+    print(f"{text} | image={img}" if img else f"{text} | ")
 
 
 def main():

@@ -81,13 +81,15 @@ assert isinstance(s.get("term",""), str), "term must be a string"
 if s.get("tty"):
     assert s["tty"].startswith("/dev/"), "tty must be a /dev path: %r" % s["tty"]
 PY
-# Also prove capture works when TERM_PROGRAM *is* set (simulates a real terminal).
-TERM_PROGRAM="iTerm.app" sh -c "echo '{\"session_id\":\"$SID\",\"cwd\":\"$CWD\"}' | python3 '$SRC/cc-status.py' working"
-python3 - "$STATUS_DIR/$SID.json" <<'PY' || fail "term not captured when TERM_PROGRAM set"
+# Also prove capture works when TERM_PROGRAM is set — use a FRESH session id so
+# the "only set term if missing" guard doesn't keep a value from an earlier step.
+TERM_PROGRAM="iTerm.app" sh -c "echo '{\"session_id\":\"termcheck\",\"cwd\":\"$CWD\"}' | python3 '$SRC/cc-status.py' working"
+python3 - "$STATUS_DIR/termcheck.json" <<'PY' || fail "term not captured when TERM_PROGRAM set"
 import json,sys
 s=json.load(open(sys.argv[1]))
 assert s.get("term")=="iTerm.app", "expected iTerm.app, got %r" % s.get("term")
 PY
+rm -f "$STATUS_DIR/termcheck.json"
 # restore needs-attention for the remaining steps
 echo "{\"session_id\":\"$SID\",\"cwd\":\"$CWD\",\"message\":\"Permission needed: Bash\"}" \
   | python3 "$SRC/cc-status.py" needs-attention
@@ -123,8 +125,10 @@ import json,sys
 c=json.load(open(sys.argv[1]))
 assert c.get("primary")=="oldproj", c
 PY
-python3 "$SRC/claude.2s.py" | head -1 | grep -q "oldproj" \
-  || fail "pinned project not shown in menu-bar title"
+# When a project is pinned, the menu-bar title shows its live context % (with a
+# status dot) instead of the generic session count.
+python3 "$SRC/claude.2s.py" | head -1 | grep -q "%" \
+  || fail "pinned project's context % not shown in menu-bar title"
 
 echo "8. SessionEnd -> file removed"
 echo "{\"session_id\":\"$SID\",\"cwd\":\"$CWD\"}" | python3 "$SRC/cc-status.py" end

@@ -7,8 +7,10 @@ to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 ## [Unreleased]
 
 ### Added
-- Mascot logo shown as the menu-bar icon, with a colored status badge (red count
-  when sessions need you, amber when working, or the pinned project's context %).
+- Mascot logo shown as the menu-bar icon (small, with transparent padding so it
+  sits tidily in the bar), preceded by an always-visible colored status dot
+  (🔴 waiting · 🟡 working · 🟢 idle) plus a count or the pinned project's
+  context % — so status stays readable at a glance even with the logo present.
 
 ### Fixed
 - Clicking a session row could launch your editor (e.g. VS Code) instead of
