@@ -1,0 +1,49 @@
+name: Bug report
+description: Something isn't working as expected
+labels: ["bug"]
+body:
+  - type: markdown
+    attributes:
+      value: Thanks for taking the time to file a bug! Please fill out the details below.
+  - type: textarea
+    id: what-happened
+    attributes:
+      label: What happened?
+      description: What did you see, and what did you expect instead?
+    validations:
+      required: true
+  - type: textarea
+    id: repro
+    attributes:
+      label: Steps to reproduce
+      placeholder: |
+        1. ...
+        2. ...
+        3. ...
+    validations:
+      required: true
+  - type: input
+    id: macos
+    attributes:
+      label: macOS version
+      placeholder: "e.g. 14.5"
+    validations:
+      required: true
+  - type: input
+    id: terminal
+    attributes:
+      label: Terminal app
+      placeholder: "e.g. Apple Terminal, iTerm2, VS Code integrated terminal"
+  - type: input
+    id: python
+    attributes:
+      label: python3 --version
+      placeholder: "e.g. 3.12.4"
+  - type: textarea
+    id: logs
+    attributes:
+      label: Relevant output
+      description: |
+        Helpful: the contents of a state file (`cat ~/.claude/status/*.json`) and
+        the plugin output (`python3 ~/Library/Application\ Support/SwiftBar/Plugins/claude.2s.py`).
+      render: shell

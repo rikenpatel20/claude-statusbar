@@ -1,0 +1,38 @@
+# Changelog
+
+All notable changes to this project are documented here. The format is based on
+[Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and this project adheres
+to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
+
+## [Unreleased]
+
+## [0.1.0] - 2026-06-24
+
+Initial release.
+
+### Added
+- macOS menu-bar indicator (SwiftBar plugin) showing all live Claude Code
+  sessions: green idle / yellow working / red + count when sessions need you.
+- Native notification + sound the instant a session hits a permission prompt.
+- Per-session live token (context-window usage) and dollar cost, with a
+  context-fill bar that auto-detects 200K vs 1M-context models.
+- Click a session row to focus its exact terminal window/tab (matched by tty);
+  Apple Terminal + iTerm2, with app-activate fallback for other terminals.
+- Pin a project to feature its live %/cost in the menu-bar text, plus a
+  filter-to-pinned toggle.
+- Staleness handling: a "working" session with no refresh for 90s is shown as
+  idle, with one-click "Clear idle sessions" and per-row clear.
+- `--chain` mode so an existing custom status line is recorded *and* displayed
+  unchanged.
+- Documented state-file JSON schema so alternative front-ends can be built.
+- Safe, idempotent, backed-up `settings.json` merge (`install.sh --write-settings`).
+- Smoke-test suite running on macOS and Linux via GitHub Actions CI.
+
+### Fixed
+- Claude Code's idle "waiting for your input" notification is no longer treated
+  as a red action item (it maps to `done`), so the bar never shows a false
+  "waiting on you".
+- Menu detail text uses full-contrast colors instead of washed-out gray.
+
+[Unreleased]: https://github.com/rikenpatel20/claude-statusbar/compare/v0.1.0...HEAD
+[0.1.0]: https://github.com/rikenpatel20/claude-statusbar/releases/tag/v0.1.0

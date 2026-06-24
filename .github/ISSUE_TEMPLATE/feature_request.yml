@@ -1,0 +1,28 @@
+name: Feature request
+description: Suggest an idea or a new front-end
+labels: ["enhancement"]
+body:
+  - type: textarea
+    id: problem
+    attributes:
+      label: What problem would this solve?
+      description: Describe the use case, not just the solution.
+    validations:
+      required: true
+  - type: textarea
+    id: proposal
+    attributes:
+      label: Proposed solution
+  - type: dropdown
+    id: area
+    attributes:
+      label: Area
+      options:
+        - Menu-bar UI (SwiftBar plugin)
+        - New front-end (tmux / waybar / Raycast / web …)
+        - Hooks / status line / state schema
+        - Terminal focusing
+        - Install / docs
+        - Other
+    validations:
+      required: true

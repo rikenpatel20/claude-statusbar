@@ -1,0 +1,31 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  test:
+    name: smoke (${{ matrix.os }})
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [macos-latest, ubuntu-latest]
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Byte-compile all Python (syntax check)
+        run: python3 -m py_compile src/*.py scripts/*.py
+
+      - name: Make scripts executable
+        run: chmod +x src/*.py scripts/*.py tests/*.sh
+
+      - name: Run smoke tests
+        run: bash tests/smoke_test.sh

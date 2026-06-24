@@ -1,0 +1,23 @@
+{
+  "statusLine": {
+    "type": "command",
+    "command": "~/.claude/status/cc-statusline.py"
+  },
+  "hooks": {
+    "Notification": [
+      { "hooks": [{ "type": "command", "command": "~/.claude/status/cc-status.py needs-attention" }] }
+    ],
+    "UserPromptSubmit": [
+      { "hooks": [{ "type": "command", "command": "~/.claude/status/cc-status.py working" }] }
+    ],
+    "PostToolUse": [
+      { "hooks": [{ "type": "command", "command": "~/.claude/status/cc-status.py working" }] }
+    ],
+    "Stop": [
+      { "hooks": [{ "type": "command", "command": "~/.claude/status/cc-status.py done" }] }
+    ],
+    "SessionEnd": [
+      { "hooks": [{ "type": "command", "command": "~/.claude/status/cc-status.py end" }] }
+    ]
+  }
+}
