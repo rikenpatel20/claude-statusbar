@@ -16,6 +16,10 @@ Know when a session needs you, what's working, how full each context window is,<
 <img src="https://img.shields.io/badge/PRs-welcome-brightgreen.svg" alt="PRs welcome"/>
 </p>
 
+<br/>
+
+<img src="assets/hero.png" alt="claude-statusbar — live Claude Code session tracking, token usage, and cost monitoring in your macOS menu bar" width="100%" />
+
 </div>
 
 ---
