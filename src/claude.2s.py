@@ -21,6 +21,10 @@ Interactivity:
 A session shown as "working" but not updated in IDLE_AFTER seconds is treated as
 idle — a genuinely working session refreshes its status line constantly, so
 silence means it actually finished (and just never fired a Stop event).
+
+Finished sessions (done/idle) older than DONE_HIDE_AFTER drop off the menu
+automatically, so it never fills up with runs you're done with. Sessions that
+need you or are actively working are always shown.
 """
 import os
 import json
@@ -50,6 +54,8 @@ def action(script, *params):
 
 STALE_SECONDS = 6 * 3600     # hide entirely after this
 IDLE_AFTER = 90              # "working" with no refresh past this == idle
+DONE_HIDE_AFTER = 30 * 60   # drop finished (done/idle) rows after this, to keep
+                            # the menu clean — needs-attention/working never auto-hide
 
 RANK = {"needs-attention": 3, "working": 2, "idle": 1, "done": 1}
 DOT = {"needs-attention": "🔴", "working": "🟡", "idle": "⚪", "done": "🟢"}
@@ -125,10 +131,16 @@ def load_sessions(now):
                 s = json.load(f)
         except Exception:
             continue
-        if now - s.get("updated_at", 0) > STALE_SECONDS:
+        age = now - s.get("updated_at", 0)
+        if age > STALE_SECONDS:
             continue
         s["_eff"] = effective_status(s, now)
-        s["_age"] = now - s.get("updated_at", 0)
+        s["_age"] = age
+        # Auto-prune finished work: a done/idle session older than DONE_HIDE_AFTER
+        # drops off on its own, so the menu doesn't accumulate yesterday's runs.
+        # Sessions that need you or are actively working are always kept.
+        if s["_eff"] in ("done", "idle") and age > DONE_HIDE_AFTER:
+            continue
         out.append(s)
     return out
 

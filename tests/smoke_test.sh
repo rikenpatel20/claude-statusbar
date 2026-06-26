@@ -118,6 +118,24 @@ SUMMARY="$(python3 "$SRC/claude.2s.py" | grep 'session')"
 echo "$SUMMARY" | grep -q "0 working" \
   || fail "stale 'working' session was still counted as working: $SUMMARY"
 
+echo "6b. auto-prune: a finished (done) session older than 30m drops off the menu"
+OLD_DONE=$(( $(date +%s) - 2000 ))   # ~33m ago, past DONE_HIDE_AFTER (1800s)
+cat > "$STATUS_DIR/done-old.json" <<JSON
+{"session_id":"done-old","project":"finished-proj","cwd":"$CWD","model":"Claude",
+ "status":"done","tokens":1000,"cost_usd":0.01,"updated_at":$OLD_DONE}
+JSON
+python3 "$SRC/claude.2s.py" | grep -q "finished-proj" \
+  && fail "old finished session should have been auto-pruned from the menu"
+# A recently-finished session must still be visible.
+NEW_DONE=$(( $(date +%s) - 60 ))
+cat > "$STATUS_DIR/done-new.json" <<JSON
+{"session_id":"done-new","project":"justfinished","cwd":"$CWD","model":"Claude",
+ "status":"done","tokens":1000,"cost_usd":0.01,"updated_at":$NEW_DONE}
+JSON
+python3 "$SRC/claude.2s.py" | grep -q "justfinished" \
+  || fail "recently-finished session should still be shown"
+rm -f "$STATUS_DIR/done-old.json" "$STATUS_DIR/done-new.json"
+
 echo "7. pin + filter controls work via cc-config.py"
 python3 "$SRC/cc-config.py" pin oldproj >/dev/null 2>&1
 python3 - "$STATUS_DIR/config.json" <<'PY' || fail "pin not recorded"

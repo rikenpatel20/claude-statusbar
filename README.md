@@ -65,12 +65,22 @@ menu bar:  🔴 2        ← two sessions are waiting on you
 | 📊 **Live tokens + cost** | per session, with a context-fill bar (auto-detects 200K vs 1M models) |
 | 🖱️ **Click to focus** | jump straight to that session's terminal window/tab (matched by tty) |
 | 📌 **Pin & filter** | feature one project's live %/cost in the bar; hide the rest |
-| 🧹 **Honest status** | a quiet "working" session is auto-marked idle; one-click clear of stale ones |
+| 🧹 **Honest status** | a quiet "working" session is auto-marked idle, finished runs auto-drop after 30m, and stale entries clear in one click |
 | 🪶 **Zero deps** | pure `python3` + a shell installer; wraps (never replaces) your status line |
 
 ## Quick start
 
 SwiftBar is **free and open source** — no paid tier or developer account required.
+
+### Homebrew (recommended)
+
+```bash
+brew install --cask swiftbar                      # the menu-bar host
+brew install rikenpatel20/tap/claude-statusbar    # the tracker
+claude-statusbar --write-settings                 # installs scripts + plugin, patches settings.json (backs it up)
+```
+
+### From source
 
 ```bash
 brew install --cask swiftbar      # the menu-bar host
@@ -81,8 +91,8 @@ cd claude-statusbar
 
 Restart Claude Code. That's it — the icon appears as soon as a session is active.
 
-<sub>Prefer to wire it yourself? Run `./install.sh` (no flag) and merge the printed
-`settings.snippet.json` into `~/.claude/settings.json` by hand.</sub>
+<sub>Prefer to wire it yourself? Run `claude-statusbar` (or `./install.sh`) with no
+flag and merge the printed `settings.snippet.json` into `~/.claude/settings.json` by hand.</sub>
 
 ## How it works
 
@@ -162,7 +172,8 @@ Menu-bar preferences live in `~/.claude/status/config.json`:
 - **Hover a row** → context bar, model, "active Xm ago", and actions.
 - **★ Show in menu bar** → feature that project's live %/cost in the bar.
 - **Filter: pinned only** → hide everything except the pinned project.
-- **Clear idle sessions (30m+)** or the per-row **✕** → drop stale entries.
+- Finished sessions **auto-drop after 30 minutes**; **Clear idle sessions (30m+)**
+  or the per-row **✕** removes their state files immediately.
 
 ### Options
 

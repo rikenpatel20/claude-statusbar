@@ -6,6 +6,14 @@ to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
 
+## [0.1.1] - 2026-06-25
+
+### Added
+- Auto-prune: finished sessions (done/idle) older than 30 minutes drop off the
+  menu automatically, so it never fills with runs you're done with. Sessions
+  that need you or are actively working are always shown.
+- Homebrew tap: install with `brew install rikenpatel20/tap/claude-statusbar`.
+
 ## [0.1.0] - 2026-06-24
 
 Initial release.
@@ -40,5 +48,6 @@ Initial release.
   `python3` explicitly via `shell=`.
 - Menu detail text uses full-contrast colors instead of washed-out gray.
 
-[Unreleased]: https://github.com/rikenpatel20/claude-statusbar/compare/v0.1.0...HEAD
+[Unreleased]: https://github.com/rikenpatel20/claude-statusbar/compare/v0.1.1...HEAD
+[0.1.1]: https://github.com/rikenpatel20/claude-statusbar/compare/v0.1.0...v0.1.1
 [0.1.0]: https://github.com/rikenpatel20/claude-statusbar/releases/tag/v0.1.0
